@@ -1,0 +1,23 @@
+{
+  "name": "terraform-lambda",
+  "version": "1.0.0",
+  "description": "Sample project for deploying lambdas in AWS.  It contains terraform code to build lambda infrastructure - IAM roles, s3 buckets, etc.  It also contains a module to be used within development repos to create/deploy the function.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "standard"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kmccanless/terraform-lambda.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kmccanless/terraform-lambda/issues"
+  },
+  "homepage": "https://github.com/kmccanless/terraform-lambda#readme",
+  "devDependencies": {
+    "standard": "^16.0.1"
+  }
+}
