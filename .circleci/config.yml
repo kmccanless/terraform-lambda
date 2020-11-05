@@ -45,9 +45,9 @@ workflows:
   run_lint:
     jobs:
       - lint
-      - plan-apply
+      - plan-apply:
           requires:
             - lint
-      - apply
+      - apply:
           requires:
             - plan-apply
