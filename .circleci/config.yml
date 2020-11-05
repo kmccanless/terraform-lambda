@@ -12,14 +12,10 @@ jobs:
           cache-path: ~/project/node_modules
           override-ci-command: npm install
       - run: npm run lint
-  install:
-    terraform_version: 0.12.29
-    docker:
-      - image: hashicorp/terraform:light
   plan-apply:
     working_directory: ~/project
     docker:
-      - image: hashicorp/terraform:light
+      - image: hashicorp/terraform:0.12.29
     steps:
       - checkout
       - run:
@@ -33,7 +29,7 @@ jobs:
             - .
   apply:
     docker:
-      - image: hashicorp/terraform:light
+      - image: hashicorp/terraform:0.12.29
     steps:
       - attach_workspace:
           at: .
@@ -49,6 +45,5 @@ workflows:
   run_lint:
     jobs:
       - lint
-      - install
       - plan-apply
       - apply
