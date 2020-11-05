@@ -12,8 +12,38 @@ jobs:
           cache-path: ~/project/node_modules
           override-ci-command: npm install
       - run: npm run lint
-
+  plan-apply:
+    working_directory: ~project
+    docker:
+      - image: hashicorp/terraform:light
+    steps:
+      - checkout
+      - run:
+          name: terraform init & plan
+          command: |
+            terraform init -input=false
+            terraform plan -out tfapply -var-file variables.tfvars
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+  apply:
+    docker:
+      - image: hashicorp/terraform:light
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: terraform
+          command: |
+            terraform apply -auto-approve tfapply
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
 workflows:
   run_lint:
     jobs:
       - lint
+      - plan-apply
+      - apply
