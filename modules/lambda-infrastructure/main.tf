@@ -149,13 +149,14 @@ data "aws_iam_policy_document" "lambda_developer_policy_document" {
   statement {
     actions = [
       "s3:Get*",
-      "s3:List*"
+      "s3:List*",
+      "s3:PutObject"
     ]
 
     resources = [
       "arn:aws:s3:::kam-tf-state",
-
       "arn:aws:s3:::kam-tf-state/*"
+
     ]
   }
 }
