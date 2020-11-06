@@ -19,27 +19,31 @@ jobs:
           cache-path: ~/project/node_modules
           override-ci-command: npm install
       - run: npm run lint
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
   build:
     working_directory: ~/project
     docker:
       - image: bash:4.4
     steps:
       - attach_workspace:
-          at: /home/circleci
+          at: .
       - run:
           name: run build script
           command: './script/build'
       - persist_to_workspace:
-          root: /home/circleci
+          root: .
           paths:
-            - project
+            - .
   plan-apply:
     working_directory: ~/project
     docker:
       - image: hashicorp/terraform:light
     steps:
       - attach_workspace:
-          at: /home/circleci
+          at: .
       - run:
           name: run build script
           command: './script/build.sh'
