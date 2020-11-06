@@ -1,8 +1,26 @@
-provider "aws" {
-  region = var.region
-  profile= var.profile
+data "aws_caller_identity" "current" {}
+locals {
+  account_id = data.aws_caller_identity.current.account_id
 }
-
+provider "aws" {
+  region = "us-east-2"
+  profile=var.profile
+}
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.0"
+    }
+  }
+  backend "s3" {
+    bucket = "kam-tf-state"
+    key    = "terraform-lambda-infrastructure"
+    region = "us-east-2"
+    encrypt        = true
+    profile        = "test-acct-1-admin"
+  }
+}
 resource "aws_s3_bucket" "lambda_bucket" {
   force_destroy = true
   bucket = var.s3_bucket
@@ -61,9 +79,46 @@ data "aws_iam_policy_document" "lambda_developer_policy_document" {
     resources = ["*"]
   }
   statement {
+    actions = [
+    "iam:ListAccessKeys",
+    "iam:GetUser"
+    ]
+    resources = [
+      aws_iam_user.lambda-developer.arn
+    ]
+  }
+  statement {
+    actions = [
+    "iam:ListAttachedRolePolicies"
+    ]
+    resources = [
+      aws_iam_role.lambda_iam_role.arn
+    ]
+  }
+  statement {
+    actions = [
+    "iam:GetPolicy",
+      "iam:GetPolicyVersion"
+    ]
+    resources = [
+      aws_iam_policy.lambda_lambda_execution.arn,
+      "arn:aws:iam::${local.account_id}:policy/LambdaAccess"
+    ]
+  }
+  statement {
+    actions = [
+    "iam:GetGroup",
+      "iam:ListAttachedGroupPolicies"
+    ]
+    resources = [
+      aws_iam_group.lambda-developers.arn
+    ]
+  }
+  statement {
     sid ="PassRole"
     actions = [
-      "iam:PassRole"
+      "iam:PassRole",
+      "iam:GetRole"
     ]
     resources = [aws_iam_role.lambda_iam_role.arn]
   }
@@ -91,6 +146,18 @@ data "aws_iam_policy_document" "lambda_developer_policy_document" {
       "arn:aws:s3:::${var.s3_asset_bucket}/*"
     ]
   }
+  statement {
+    actions = [
+      "s3:Get*",
+      "s3:List*"
+    ]
+
+    resources = [
+      "arn:aws:s3:::kam-tf-state",
+
+      "arn:aws:s3:::kam-tf-state/*"
+    ]
+  }
 }
 
 resource "aws_iam_role" "lambda_iam_role" {
@@ -116,7 +183,7 @@ resource "aws_iam_role_policy_attachment" "lambda_policy_attachment" {
   policy_arn = aws_iam_policy.lambda_lambda_execution.arn
 }
 resource "aws_iam_policy" "lambda_lambda_execution" {
-  name = "lambda__execution"
+  name = "lambda_execution"
   policy = data.aws_iam_policy_document.lambda_policy_data.json
 }
 

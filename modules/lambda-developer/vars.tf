@@ -7,3 +7,4 @@ variable "archive_md5" {}
 variable "archive_name" {}
 variable "archive_sha256" {}
 variable "en_vars" {}
+variable "profile" {}

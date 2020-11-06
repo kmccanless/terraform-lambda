@@ -7,7 +7,6 @@ variable "region" {
 variable "profile" {
   default = "test-acct-1-admin"
 }
-
 variable "s3_asset_bucket" {
   default = "km-lambda-assets"
 }

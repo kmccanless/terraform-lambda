@@ -1,7 +1,10 @@
 data "terraform_remote_state" "infrastructure" {
-  backend = "local"
+  backend = "s3"
   config = {
-    path = "./modules/lambda-infrastructure/terraform.tfstate"
+    bucket = "kam-tf-state"
+    key    = "terraform-lambda-infrastructure"
+    region = "us-east-2"
+    profile  = var.profile
   }
 }
 locals {
