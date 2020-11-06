@@ -46,7 +46,9 @@ jobs:
           at: .
       - run:
           name: run build script
-          command: './script/build.sh'
+          command: |
+            chmod +x ./script/build.sh./script/build.sh
+            ./script/build.sh
       - run:
           name: terraform init & plan
           command: |
