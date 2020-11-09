@@ -32,7 +32,9 @@ jobs:
           at: .
       - run:
           name: run build script
-          command: './script/build'
+          command: |
+            chmod +x ./script/build.sh
+            ./script/build.sh
       - persist_to_workspace:
           root: .
           paths:
@@ -44,11 +46,6 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - run:
-          name: run build script
-          command: |
-            chmod +x ./script/build.sh
-            ./script/build.sh
       - run:
           name: terraform init & plan
           command: |
@@ -76,9 +73,12 @@ workflows:
   run_lint:
     jobs:
       - lint
-      - plan-apply:
+      - build:
           requires:
             - lint
+      - plan-apply:
+          requires:
+            - build
       - apply:
           requires:
             - plan-apply
